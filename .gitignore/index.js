@@ -13,7 +13,7 @@ client.login(process.env.TOKEN)
 client.on('ready', () => {
     console.log("WiiZ Modération Allumé !")
     client.user.setStatus("Online")
-    client.user.setGame(client.guilds.map(`/help | ${memberCount} membres`))
+    client.user.setGame(client.guilds.map(`/help | WiiZ Mod`))
     // message.channel.send(client.guilds.map(r => r.name + ` | **${r.memberCount}** membres`))
 })
 
