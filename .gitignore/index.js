@@ -6,36 +6,15 @@ var prefix = '/';
 
 const fs = require("fs-extra");
 
-
-
-
-//const ytdl = require('ytdl-core');
-
-//const queue = new Map();
-
-//var servers = {};
-
 client.login(process.env.TOKEN)
-//function play(connection, message) {
-//    var server = servers[message.guild.id];
-//
-//    server.dispatcher = connection.playStream(ytdl(server.queue[0], {filter: "audioonly"}));
-//
-//    server.queue.shift();
-//
-//    server.dispatcher.on("end", function() {
-//        if (server.queue[0]) play(connection, message);
-//
-//        else connection.disconnect();
-//    });
-//}
 
 
 
 client.on('ready', () => {
     console.log("WiiZ Modération Allumé !")
     client.user.setStatus("Online")
-    client.user.setGame("/help | WiiZ Modération")
+    client.user.setGame(client.guilds.map(`/help | ${memberCount} membres`))
+    // message.channel.send(client.guilds.map(r => r.name + ` | **${r.memberCount}** membres`))
 })
 
 client.on('message', message => {
@@ -63,13 +42,13 @@ client.on('message', message => {
 
 
 // HELP DEBUT
-    if(message.content === prefix + 'mod'){
+    if(message.content.startsWith(prefix + "mod")) {
       var mod_embed = new Discord.RichEmbed()
       .setColor("#B9121B")
       .setTitle("Page d'aide de Moderation :tools:")
       .setThumbnail(message.author.avatarURL)
       .addField("Modération - Basique :tools:", "/kick - Permet de kick un utilisateur\n/mute - Permet de mute un utilisateur\n/unmute - Permet d'unmute un utilisateur\n/clear - Permet de supprimer un nombre de message définie\n/ping - Permet d'afficher la latence avec le serveur\n/serverlist - Permet d'afficher touts les serveur ou WiiZBot est connecté !\n/regle - Affiche les règles du serveur ")
-      .addField("Modération - Avancé :tools:", "/ban - Permet de ban un utilisateur\n/warn - Permet d'avertir un utilisateur\n/seewarns - Permet d'afficher les avertissement d'un utilisateur\n/deletewarns - Permet de supprimer un avertissement d'un utilisateur ")
+      .addField("Modération - Avancé :tools:", "/ban - Permet de ban un utilisateur\n/warn - Permet d'avertir un utilisateur\n/seewarns - Permet d'afficher les avertissement d'un utilisateur\n/deletewarns - Permet de supprimer un avertissement d'un utilisateur\n/dlchannel - Supprime le channel où tu te trouves")
       message.channel.send(mod_embed);
     }
 
@@ -78,16 +57,16 @@ client.on('message', message => {
       .setColor("#046380")
       .setTitle("Page d'aide des Infos :bulb:")
       .setThumbnail(message.author.avatarURL)
-      .addField("Commandes:",  "/statistique - Envoie les statistiques de l'utilisateur en privé\n/info - Affiche les infos du bot et du serveur\n/part - Affiche la liste des Partenaires")
+      .addField("Commandes:",  "/statistique - Envoie les statistiques de l'utilisateur en privé\n/info - Affiche les infos du bot et du serveur\n/part - Affiche la liste des Partenaires\n/avatar - Affiche ton avatar\n/d invite - Créer une invitation du salon")
       message.channel.send(sb_embed);
     }
 
-    if(message.content === prefix + 'fun'){
+    if(message.content === prefix + 'fun/utilisateur'){
       var fun_embed = new Discord.RichEmbed()
       .setColor("#FDD131")
       .setTitle("Page d'aide des commandes Fun/Utiles :tada:")
       .setThumbnail(message.author.avatarURL)
-      .addField("Commandes:", "/8ball <question> - Le bot vous donne une réponse\nBonjour - Le bot répond\n/pokemon - Affiche les paroles du générique de Pokemon\n/dog - Affiche des gifs de chiens\n/gt - TchatGeneral de WiiZBot\nNécessite le salon `global-wiiz`\n/nbr - Affiche toutes les choses utiles à savoir")
+      .addField("Commandes:", "/8ball <question> - Le bot vous donne une réponse\nBonjour - Le bot répond\n/pokemon - Affiche les paroles du générique de Pokemon\n/dog - Affiche des gifs de chiens\n/nbr - Affiche toutes les choses utiles à savoir\n/avatar - Affiche ton avatar")
       message.channel.send(fun_embed);
 
     }
@@ -532,25 +511,6 @@ if(!message.guild.member(message.author).hasPermission("MANAGE_GUILD")) return m
         case "ping":
         message.channel.sendMessage('Temps de latence avec le serveur: `' + `${message.createdTimestamp - Date.now()}` + ' ms`');
         break;
-        case "gt":
-        let xoargs = message.content.split(" ").slice(1);
-        let xo03 = xoargs.join(" ")
-        var xo02 = message.guild.channels.find('name', 'global-wiiz');
-        if(!xo02) return message.reply("le channel `global-wiiz` est introuvable !")
-        if(message.channel.name !== 'global-wiiz') return message.reply("Commande a effectuer dans `global-wiiz`")
-        if(!xo03) return message.reply("Merci d'écrire un message !")
-        message.delete();
-        var embedglobal = new Discord.RichEmbed()
-        .setColor("0x0000FF")
-        .setThumbnail(message.author.avatarURL)
-        .setTitle("Message Global WiiZBot")
-        .addField("Pseudo de l'utilisateur", message.author.username + "#" + message.author.discriminator, true)
-        .addField("Discord", message.guild.name, true)
-        .addField("Message", xo03)
-        .setFooter("WiiZ Modération")
-        .setTimestamp()
-      client.channels.findAll('name', 'global-wiiz').map(channel => channel.send(embedglobal))
-        break;
         case "serverlist":
         message.channel.send(client.guilds.map(r => r.name + ` | **${r.memberCount}** membres`))
         break;
@@ -729,6 +689,26 @@ client.on('message', message => {
     message.channel.send("Le bot contient `29 commandes`, dont `4` qui sont regroupées,`1` commande `INDISPONIBLE` et `1` impossible à effectuer (Message de bienvenue)")
   }
 })
+
+client.on('message', message => {
+  if(message.content === prefix + "avatar"){
+    message.channel.send(`Voici votre avatar : ${message.author.avatarURL}`)
+  }
+  if(message.content === prefix + "d invite"){
+    channel.createInvite()
+      .then(invite => console.log(`Created an invite with a code of ${invite.code}`))
+      .catch(console.error);
+  }
+  if(message.content.startsWith(prefix + "dlchannel")) {
+    if(!message.guild.member(message.author).hasPermission("ADMINISTRATOR")) return message.channel.send("Tu ne peux pas supprimer de channels\nIl te manque la permission `ADMINISTRATOR`");
+    // Delete the channel
+    channel.delete()
+      .then(console.log)
+      .catch(console.error);
+  }
+
+})
+
 
 // client.on('message', message => {
 //   if(message.content === prefix + "help#2"){
